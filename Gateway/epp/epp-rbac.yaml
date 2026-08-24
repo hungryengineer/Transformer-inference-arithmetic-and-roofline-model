@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vllm-epp-epp
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: vllm-epp-epp-sa
+  namespace: default
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: vllm-epp-epp-non-sa
+  namespace: default
+rules:
+  - apiGroups: ["inference.networking.x-k8s.io"]
+    resources: ["inferenceobjectives", "inferencemodelrewrites"]
+    verbs: ["get", "watch", "list"]
+  - apiGroups: ["llm-d.ai"]
+    resources: ["inferenceobjectives", "inferencemodelrewrites"]
+    verbs: ["get", "watch", "list"]
+  - apiGroups: ["inference.networking.k8s.io"]
+    resources: ["inferencepools"]
+    verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: vllm-epp-epp-sa
+  namespace: default
+subjects:
+  - kind: ServiceAccount
+    name: vllm-epp-epp
+    namespace: default
+roleRef:
+  kind: Role
+  name: vllm-epp-epp-sa
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: vllm-epp-epp-non-sa
+  namespace: default
+subjects:
+  - kind: ServiceAccount
+    name: vllm-epp-epp
+    namespace: default
+roleRef:
+  kind: Role
+  name: vllm-epp-epp-non-sa
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm-epp-epp
+  namespace: default
+  labels:
+    app.kubernetes.io/name: vllm-epp-epp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      llm-d-router-gateway: vllm-epp-epp
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        llm-d-router-gateway: vllm-epp-epp
+        llm-d.ai/igw-mode: llm-d-router-gateway
+    spec:
+      serviceAccountName: vllm-epp-epp
+      containers:
+        - name: epp
+          image: ghcr.io/llm-d/llm-d-router-endpoint-picker:main
+          imagePullPolicy: Always
+          args:
+            - --pool-name
+            - vllm-epp
+            - --pool-namespace
+            - default
+            - --pool-group
+            - inference.networking.k8s.io
+            - --zap-encoder
+            - json
+            - --config-file
+            - /config/default-plugins.yaml
+            - --grpc-health-port
+            - "9003"
+            - --tracing=false
+            - --secure-serving=false
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+          ports:
+            - containerPort: 9002
+              name: grpc
+              protocol: TCP
+            - containerPort: 9003
+              name: grpc-health
+              protocol: TCP
+            - containerPort: 9090
+              name: metrics
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            grpc:
+              port: 9003
+              service: inference-extension
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            grpc:
+              port: 9003
+              service: inference-extension
+            periodSeconds: 2
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 500m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
+          volumeMounts:
+            - mountPath: /config
+              name: plugins-config-volume
+      volumes:
+        - name: plugins-config-volume
+          configMap:
+            name: vllm-epp-epp
+      terminationGracePeriodSeconds: 130

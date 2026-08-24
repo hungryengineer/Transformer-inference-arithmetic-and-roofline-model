@@ -1,0 +1,35 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: Backend
+metadata:
+  name: vllm-epp-ext-proc
+  namespace: default
+spec:
+  appProtocols:
+    - gateway.envoyproxy.io/h2c
+  endpoints:
+    - fqdn:
+        hostname: vllm-epp-epp.default.svc.cluster.local
+        port: 9002
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyExtensionPolicy
+metadata:
+  name: vllm-epp-ext-proc
+  namespace: default
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: vllm-route
+  extProc:
+    - backendRefs:
+        - group: gateway.envoyproxy.io
+          kind: Backend
+          name: vllm-epp-ext-proc
+      failOpen: false
+      messageTimeout: "30s"
+      processingMode:
+        request:
+          body: FullDuplexStreamed
+        response:
+          body: FullDuplexStreamed
