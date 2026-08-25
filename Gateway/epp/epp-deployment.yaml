@@ -37,7 +37,7 @@ spec:
             - --grpc-health-port
             - "9003"
             - --tracing=false
-            - --secure-serving=false
+            - --secure-serving=true
           env:
             - name: NAMESPACE
               valueFrom:

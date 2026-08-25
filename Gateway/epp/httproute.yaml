@@ -14,8 +14,9 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - group: ""
-          kind: Service
-          name: vllm-svc
-          port: 8000
+        - group: inference.networking.k8s.io
+          kind: InferencePool
+          name: vllm-epp
           weight: 1
+      timeouts:
+        request: 60s

@@ -54,11 +54,13 @@ echo "=== Step 6: Apply HTTPRoute (InferencePool backend) ==="
 kubectl apply -f "${SCRIPT_DIR}/httproute.yaml"
 
 echo ""
-echo "=== Step 7: Apply Backend (h2c) + EnvoyExtensionPolicy (FullDuplexStreamed) ==="
-# EG v1.8.3 cannot use InferencePool as HTTPRoute backendRef (InvalidKind).
-# AI-aware routing works via: HTTPRoute → vllm-svc + ExtProc → EPP scorers.
-# Requires: enableBackend=true on EnvoyGateway, EPP --secure-serving=false, h2c Backend.
-kubectl apply -f "${SCRIPT_DIR}/envoy-extension-policy.yaml"
+echo "=== Step 7: Skip manual EnvoyExtensionPolicy ==="
+# Real AI-aware routing needs Envoy AI Gateway + EG extensionManager
+# (see Gateway/aieg/). AI Gateway wires ExtProc + ORIGINAL_DST for
+# HTTPRoute → InferencePool. EPP must use --secure-serving=true (AI Gateway
+# always TLS to the endpoint picker). Do NOT apply envoy-extension-policy.yaml
+# alongside InferencePool — it conflicts / is redundant.
+kubectl delete -f "${SCRIPT_DIR}/envoy-extension-policy.yaml" --ignore-not-found || true
 
 echo ""
 echo "=== All resources applied. Waiting for pods ==="
@@ -72,8 +74,8 @@ echo ""
 echo "EPP Pod:"
 kubectl get pods -l llm-d-router-gateway=vllm-epp-epp
 echo ""
-echo "EnvoyExtensionPolicy:"
-kubectl get envoyextensionpolicy vllm-epp-ext-proc
+echo "HTTPRoute backend should be InferencePool vllm-epp:"
+kubectl get httproute vllm-route -o jsonpath='{.spec.rules[0].backendRefs}{"\n"}'
 echo ""
 echo "Done. Test with:"
 echo "  curl -X POST http://<GATEWAY_IP>/v1/chat/completions \\"
