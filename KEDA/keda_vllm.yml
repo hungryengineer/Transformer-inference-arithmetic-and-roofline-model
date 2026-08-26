@@ -1,0 +1,19 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: vllm-scaler
+spec:
+  scaleTargetRef:
+    name: vllm
+    kind: StatefulSet
+  minReplicaCount: 1
+  maxReplicaCount: 2
+  pollingInterval: 5
+  cooldownPeriod: 30
+  triggers:
+    - type: prometheus
+      metadata:
+        serverAddress: http://192.168.1.40:9090
+        metricName: vllm_running_requests
+        query: sum(vllm:num_requests_running)
+        threshold: "2"
