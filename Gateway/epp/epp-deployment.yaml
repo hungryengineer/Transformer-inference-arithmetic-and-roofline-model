@@ -38,6 +38,7 @@ spec:
             - "9003"
             - --tracing=false
             - --secure-serving=true
+            - --emit-endpoint-scores=true
           env:
             - name: NAMESPACE
               valueFrom:
