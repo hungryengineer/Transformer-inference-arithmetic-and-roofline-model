@@ -1,0 +1,59 @@
+{
+  "classification": "measurements from this execution",
+  "timestamp_utc": "2026-10-30T14:05:52.524676+00:00",
+  "model": "Qwen/Qwen2.5-0.5B",
+  "prompt": "Explain what a Kubernetes pod is in one sentence.",
+  "decoding": "greedy (temperature=0)",
+  "max_new_tokens": 32,
+  "warmup_runs": 2,
+  "measured_runs": 5,
+  "measurement_boundary": "perf_counter_ns before and after llm.generate(); TTFT and TPOT are back-calculated estimates from total wall time",
+  "instrumentation_caveat": "This vLLM build (0.27.1) is a cloud distribution that does not support standalone HTTP server mode. In-process LLM is used instead. Per-token timestamps are not available; TTFT/TPOT are estimated.",
+  "median_total_wall_ms": 57.404467,
+  "mean_total_wall_ms": 57.3521868,
+  "median_ttft_ms_estimated": 4.100319071428571,
+  "median_tpot_ms_estimated": 4.100319071428571,
+  "median_tokens_per_second": 243.8834594527287,
+  "trials": [
+    {
+      "total_wall_ms": 58.504969,
+      "token_count": 14,
+      "ttft_ms_estimated": 4.178926357142857,
+      "tpot_ms_estimated": 4.178926357142857,
+      "tokens_per_second": 239.29591348044298,
+      "output_text": "A Kubernetes pod is a containerized unit of a Kubernetes cluster."
+    },
+    {
+      "total_wall_ms": 59.260927,
+      "token_count": 14,
+      "ttft_ms_estimated": 4.232923357142857,
+      "tpot_ms_estimated": 4.232923357142857,
+      "tokens_per_second": 236.24335137383184,
+      "output_text": "A Kubernetes pod is a containerized unit of a Kubernetes cluster."
+    },
+    {
+      "total_wall_ms": 57.404467,
+      "token_count": 14,
+      "ttft_ms_estimated": 4.100319071428571,
+      "tpot_ms_estimated": 4.100319071428571,
+      "tokens_per_second": 243.8834594527287,
+      "output_text": "A Kubernetes pod is a containerized unit of a Kubernetes cluster."
+    },
+    {
+      "total_wall_ms": 56.181845,
+      "token_count": 14,
+      "ttft_ms_estimated": 4.012988928571429,
+      "tpot_ms_estimated": 4.012988928571429,
+      "tokens_per_second": 249.19081956101655,
+      "output_text": "A Kubernetes pod is a containerized unit of a Kubernetes cluster."
+    },
+    {
+      "total_wall_ms": 55.408726,
+      "token_count": 14,
+      "ttft_ms_estimated": 3.957766142857143,
+      "tpot_ms_estimated": 3.957766142857143,
+      "tokens_per_second": 252.66778377109773,
+      "output_text": "A Kubernetes pod is a containerized unit of a Kubernetes cluster."
+    }
+  ]
+}
